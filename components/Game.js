@@ -10,6 +10,8 @@ import Winners from "./Winners"
 import UserWithDraw from "./UserWithDraw"
 import Admin from "./Admin"
 import GetStarted from "./GetStarted"
+import EtherScanLinks from "./EtherScanLinks"
+import Carousel from "./Carousel"
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useNotification } from "web3uikit"
 import { lotteryAbi, lotteryAddresses } from "../constants/lottery/index.js"
@@ -384,7 +386,7 @@ export default function Game() {
   }
 
   return (
-    <div className='container mx-auto'>
+    <div className='container'>
       <HeadLine
         playerLTKBalance={playerLTKBalance}
         lotteryUSDCBalanceOnLottery={lotteryUSDCBalanceOnLottery}
@@ -405,6 +407,7 @@ export default function Game() {
           handleGetStarted={handleGetStarted}
         />
       </div>
+      {winners && <Carousel winners={winners} />}
       <div className='flex flex-col lg:flex-row justify-center'>
         <CurrentPlayers
           lotteryAddress={lotteryAddress}
@@ -446,9 +449,20 @@ export default function Game() {
           />
         )}
       </div>
+
       <div className='flex flex-col lg:flex-row justify-center'>
         <div ref={ref}>
           <GetStarted
+            lotteryTokenAddress={lotteryTokenAddress}
+            usdcAddress={usdcAddress}
+          />
+        </div>
+      </div>
+
+      <div className='flex flex-col lg:flex-row justify-center'>
+        <div ref={ref}>
+          <EtherScanLinks
+            lotteryAddress={lotteryAddress}
             lotteryTokenAddress={lotteryTokenAddress}
             usdcAddress={usdcAddress}
           />

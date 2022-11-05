@@ -1,15 +1,15 @@
 import { FaLinkedinIn, FaGithub } from "react-icons/fa"
 
-export default function Footer() {
+export default function Footer({ lotteryAddress }) {
   return (
     <footer>
-      <div className='px-5 grid grid-cols-6 bg-gradient-to-r from-pink-500 to-yellow-300'>
+      <div className='grid grid-cols-6 px-5 bg-gradient-to-r from-pink-500 to-yellow-300'>
         <div className='col-span-5'>
           <h1 className='flex py-3 text-3xl italic font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-300'>
             Powered by Pool2Gether
           </h1>
         </div>
-        <div className='flex flex-end text-right'>
+        <div className='flex flex-col py-3 sm:flex-row sm:justify-around'>
           <a
             href='https://www.linkedin.com/in/siegfriedbozza/'
             className='px-3 my-auto text-purple-800'

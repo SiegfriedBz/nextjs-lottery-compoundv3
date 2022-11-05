@@ -9,27 +9,16 @@ export default function GetStarted({ lotteryTokenAddress, usdcAddress }) {
       <div className='flex flex-col align-middle justify-center lg:flex-row'>
         {lotteryTokenAddress && (
           <a
-            href={`https://goerli.etherscan.io/address/${lotteryTokenAddress}`}
+            href='https://metamask.io/download/'
             target='_blank'
             rel='noreferrer'
           >
-            <GetButton>Add LTK to MetaMask</GetButton>
+            <GetButton>Add MetaMask</GetButton>
           </a>
         )}
-
         <a href='https://faucets.chain.link/' target='_blank' rel='noreferrer'>
           <GetButton>Get Goerli ETH</GetButton>
         </a>
-
-        {usdcAddress && (
-          <a
-            href={`https://goerli.etherscan.io/address/${usdcAddress}`}
-            target='_blank'
-            rel='noreferrer'
-          >
-            <GetButton>Check Goerli USDC</GetButton>
-          </a>
-        )}
         <a href='https://app.uniswap.org/' target='_blank' rel='noreferrer'>
           <GetButton>Get Goerli USDC</GetButton>
         </a>
