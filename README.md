@@ -1,5 +1,14 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+
+## Play the Vercel deployed app
+
+https://win2together.vercel.app/
+
+![image](https://user-images.githubusercontent.com/99029880/200132510-29267e22-dbc2-4f4d-85e6-4dcea1f4a3d8.png)
+
+
+
 ## Getting Started
 
 First, run the development server:
