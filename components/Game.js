@@ -126,10 +126,10 @@ export default function Game() {
   ])
 
   async function getLotteryConstants() {
-    const admin = await getLotteryAdmin()
-    const lotteryFee = await getLotteryFee()
-    const ticketPrice = await getLotteryTicketPrice()
-    const playTimeInterval = await getPlayTimeInterval()
+    const admin = await lotteryContract.getAdmin()
+    const lotteryFee = await lotteryContract.getLotteryFee()
+    const ticketPrice = await lotteryContract.getLotteryTicketPrice()
+    const playTimeInterval = await lotteryContract.getInterval()
     setAdmin(admin)
     setLotteryFee(lotteryFee)
     setTicketPrice(ticketPrice)
@@ -137,21 +137,28 @@ export default function Game() {
   }
 
   async function upDateUI() {
-    const lotteryState = await getLotteryState()
-    const isFirstPlayer = await getIsFirstPlayer()
-    const endPlayTime = await getEndPlayTime()
-    const endWithDrawTime = await getEndWithDrawTime()
-    const players = await getPlayers()
-    const winners = await getWinners()
+    const lotteryState = await lotteryContract.getLotteryState()
+    const isFirstPlayer = await lotteryContract.getIsFirstPlayer()
+    const endPlayTime = await lotteryContract.getEndPlayTime()
+    const endWithDrawTime = await lotteryContract.getEndWithDrawTime()
+    const players = await lotteryContract.getPlayers()
+    const winners = await lotteryContract.getWinners()
+    let lotteryETHBalance
     if (provider) {
-      const lotteryETHBalance = await provider.getBalance(lotteryAddress)
+      lotteryETHBalance = await provider.getBalance(lotteryAddress)
     }
-    const lotteryUSDCBalanceOnLottery = await getLotteryUSDCBalanceOnLottery()
-    const lotteryUSDCBalanceOnCompound = await getLotteryUSDCBalanceOnCompound()
-    const lotteryLTKBalance = await getLotteryLTKBalance()
-    const playerLTKBalance = await getPlayerLTKBalance()
-    let playerLTKGivenAllowanceToLottery =
-      await getPlayerLTKGivenAllowanceToLottery()
+    const lotteryUSDCBalanceOnLottery =
+      await lotteryContract.getLotteryUSDCBalance()
+    const lotteryUSDCBalanceOnCompound =
+      await lotteryContract.getLotteryUSDCBalanceOnCompound()
+    const lotteryLTKBalance = await lotteryTokenContract.balanceOf(
+      lotteryAddress
+    )
+    const playerLTKBalance = await lotteryTokenContract.balanceOf(account)
+    let playerLTKGivenAllowanceToLottery = await lotteryTokenContract.allowance(
+      account,
+      lotteryAddress
+    )
     setLotteryState(LOTTERY_STATE[parseInt(lotteryState)])
     setIsFirstPlayer(isFirstPlayer)
     setEndPlayTime(endPlayTime)
@@ -166,8 +173,7 @@ export default function Game() {
     setPlayerLTKGivenAllowanceToLottery(playerLTKGivenAllowanceToLottery)
   }
 
-  // Lottery contract functions
-  /// use Moralis function to use onSuccess Notifications
+  // Lottery contract function using Moralis
   const { runContractFunction: enterLottery } = useWeb3Contract({
     abi: lotteryAbi,
     contractAddress: lotteryAddress,
@@ -175,139 +181,6 @@ export default function Game() {
     params: [],
     msgValue: lotteryFee,
   })
-
-  async function getLotteryAdmin() {
-    let admin = await lotteryContract.getAdmin()
-    return admin
-  }
-
-  async function getLotteryFee() {
-    const lotteryFee = await lotteryContract.getLotteryFee()
-    return lotteryFee
-  }
-
-  async function getLotteryTicketPrice() {
-    const ticketPrice = await lotteryContract.getLotteryTicketPrice()
-    return ticketPrice
-  }
-
-  async function getLotteryState() {
-    if (lotteryContract) {
-      const lotteryState = await lotteryContract.getLotteryState()
-      return lotteryState
-    }
-  }
-
-  async function getIsFirstPlayer() {
-    if (lotteryContract) {
-      const isFirstPlayer = await lotteryContract.getIsFirstPlayer()
-      return isFirstPlayer
-    }
-  }
-
-  async function getPlayers() {
-    if (lotteryContract) {
-      let players = await lotteryContract.getPlayers()
-      return players
-    }
-  }
-
-  async function getWinners() {
-    if (lotteryContract) {
-      let winners = await lotteryContract.getWinners()
-      return winners
-    }
-  }
-
-  async function getPlayTimeInterval() {
-    if (lotteryContract) {
-      let playTimeInterval = await lotteryContract.getInterval()
-      return playTimeInterval
-    }
-  }
-
-  async function getEndPlayTime() {
-    if (lotteryContract) {
-      let endPlayTime = await lotteryContract.getEndPlayTime()
-      return endPlayTime
-    }
-  }
-
-  async function getEndWithDrawTime() {
-    if (lotteryContract) {
-      let endWithDrawTime = await lotteryContract.getEndWithDrawTime()
-      return endWithDrawTime
-    }
-  }
-
-  async function getLotteryUSDCBalanceOnLottery() {
-    if (lotteryContract) {
-      let lotteryUSDCBalance = await lotteryContract.getLotteryUSDCBalance()
-      return lotteryUSDCBalance
-    }
-  }
-
-  async function getLotteryUSDCBalanceOnCompound() {
-    if (lotteryContract) {
-      let lotteryUSDCBalanceOnCompound =
-        await lotteryContract.getLotteryUSDCBalanceOnCompound()
-      return lotteryUSDCBalanceOnCompound
-    }
-  }
-
-  async function withdrawFromLottery() {
-    if (lotteryContract) {
-      let trx = await lotteryContract.withdrawFromLottery({ gasLimit: 1000000 })
-      await trx.wait(1)
-    }
-  }
-
-  // Lottery Token contract functions
-  async function getLotteryLTKBalance() {
-    if (lotteryTokenContract) {
-      const lotteryLTKBalance = await lotteryTokenContract.balanceOf(
-        lotteryAddress
-      )
-      return lotteryLTKBalance
-    }
-  }
-
-  async function getPlayerLTKBalance() {
-    if (lotteryTokenContract) {
-      const playerLTKBalance = await lotteryTokenContract.balanceOf(account)
-      return playerLTKBalance
-    }
-  }
-
-  async function playerIncreaseLTKAllowanceToLottery() {
-    if (lotteryTokenContract) {
-      let trx = await lotteryTokenContract.increaseAllowance(
-        lotteryAddress,
-        ethers.utils.parseEther("1"), // 1 LTK
-        {
-          gasLimit: 1000000,
-        }
-      )
-      await trx.wait(1)
-    }
-  }
-
-  async function getPlayerLTKGivenAllowanceToLottery() {
-    if (lotteryTokenContract) {
-      const data = await lotteryTokenContract.allowance(account, lotteryAddress)
-      return data
-    }
-  }
-
-  // USDC contract functions
-  async function playerTransferUSDCToLottery() {
-    if (usdcContract) {
-      let trx = await usdcContract.transfer(lotteryAddress, ticketPrice, {
-        gasLimit: 1000000,
-      })
-      await trx.wait(1)
-    }
-  }
 
   // helpers
   async function handleEnterLottery() {
@@ -322,7 +195,11 @@ export default function Game() {
         // 1. user calls USDC .transfer() => USDC to lottery contract
         try {
           await setProgressBar(25)
-          await playerTransferUSDCToLottery()
+          let trx = await usdcContract.transfer(lotteryAddress, ticketPrice, {
+            gasLimit: 1000000,
+          })
+          await trx.wait(1)
+          console.log("trx", trx)
         } catch (error) {
           setProgressBar(undefined)
           console.log("error", error)
@@ -344,8 +221,14 @@ export default function Game() {
         // 3. user calls LTK .increaseAllowance() => Gives LTKAllowance To Lottery
         try {
           await setProgressBar(75)
-          await playerIncreaseLTKAllowanceToLottery()
-          console.log("Player entered Lottery")
+          let trx = await lotteryTokenContract.increaseAllowance(
+            lotteryAddress,
+            ethers.utils.parseEther("1"), // 1 LTK
+            {
+              gasLimit: 1000000,
+            }
+          )
+          await trx.wait(1)
           await setProgressBar(100)
           await upDateUI()
           setProgressBar(undefined)
@@ -362,24 +245,22 @@ export default function Game() {
       if (lotteryState != "Open to Withdraw") {
         alert("Please wait until Lottery is open to Withdraw")
       } else {
-        const playerNumLTK = await getPlayerLTKBalance()
+        const playerNumLTK = await lotteryTokenContract.balanceOf(account)
         if (parseInt(playerNumLTK) == 0) {
           alert("Player without LTK can not withdraw USDC")
         } else {
           console.log(`Player ${account} is withdrawing...`)
           // Player calls Lottery .withdrawFromLottery()
-          await withdrawFromLottery()
+          let trx = await lotteryContract.withdrawFromLottery({
+            gasLimit: 1000000,
+          })
+          await trx.wait(1)
           console.log("Player has withdrawn")
           await upDateUI()
         }
       }
     }
   }
-
-  // helpers for ADMIN
-  // if (account && admin && account.toLowerCase() == admin.toLowerCase()) {
-  //   setIsAdmin(true)
-  // }
 
   async function handleAdminFundLotteryAndApproveAndSupplyCompound() {
     if (isWeb3Enabled && isAdmin && usdcContract && lotteryContract) {
@@ -435,7 +316,6 @@ export default function Game() {
 
   // helper for GetStarted
   const handleGetStarted = () => {
-    console.log("handleGetStarted")
     ref.current?.scrollIntoView({ behavior: "smooth" })
   }
 
@@ -557,7 +437,10 @@ export default function Game() {
       </div>
       <div className='flex flex-col lg:flex-row justify-center'>
         <div ref={ref}>
-          <GetStarted />
+          <GetStarted
+            lotteryTokenAddress={lotteryTokenAddress}
+            usdcAddress={usdcAddress}
+          />
         </div>
       </div>
     </div>

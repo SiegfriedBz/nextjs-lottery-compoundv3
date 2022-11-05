@@ -1,8 +1,6 @@
-import { Children } from "react"
-import ProgressBar from "./ProgressBar"
-
 export default function EnterLotteryButton(props) {
-  const { handleEnterLottery, lotteryAddress, progress, children } = props
+  const { handleEnterLottery, lotteryAddress, children } = props
+
   return (
     <div className='flex p-2 justify-center'>
       {lotteryAddress ? (
@@ -15,7 +13,6 @@ export default function EnterLotteryButton(props) {
           >
             {children}
           </button>
-          <ProgressBar progress={progress} />
         </>
       ) : (
         <h1 className='mb-2 text-center pb-2 text-lg font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
