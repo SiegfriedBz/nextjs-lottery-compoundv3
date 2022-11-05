@@ -337,6 +337,11 @@ export default function Game() {
         webSocketProvider
       )
 
+      lotteryWithWebSocket.on("LotteryEntered", async (event) => {
+        await upDateUI()
+        // TODO : add notificationss
+      })
+
       lotteryWithWebSocket.on(
         "WinnerPicked",
         async (s_newWinner, s_newPrize, winDate, event) => {
