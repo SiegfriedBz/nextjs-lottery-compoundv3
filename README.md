@@ -1,7 +1,8 @@
+## No-Loss Lottery Game 
+## This Game implements the following Smart Contracts: 
+https://github.com/SiegfriedBz/hardhat-contracts-lottery-compoundv3
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-This No-Loss Lottery Game implements the Smart Contracts: https://github.com/SiegfriedBz/hardhat-contracts-lottery-compoundv3
-
 Use react-moralis, tailwindcss, web3uikit
 
 ## Play
