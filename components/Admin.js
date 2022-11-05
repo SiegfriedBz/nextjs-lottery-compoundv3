@@ -6,8 +6,6 @@ export default function Admin({
   lotteryTokenAddress,
   usdcAddress,
   lotteryETHBalance,
-  lotteryUSDCBalanceOnLottery,
-  lotteryUSDCBalanceOnCompound,
   handleAdminFundLotteryAndApproveAndSupplyCompound,
   handleAdminWithdrawETH,
 }) {
@@ -62,22 +60,6 @@ export default function Admin({
                       {lotteryETHBalance &&
                         ethers.utils.formatEther(lotteryETHBalance)}{" "}
                       ETH
-                    </div>
-                    <div className='flex mx-auto'>
-                      {lotteryUSDCBalanceOnLottery &&
-                        ethers.utils.formatUnits(
-                          lotteryUSDCBalanceOnLottery,
-                          6
-                        )}{" "}
-                      USDC On Lottery
-                    </div>
-                    <div className='flex mx-auto'>
-                      {lotteryUSDCBalanceOnCompound &&
-                        ethers.utils.formatUnits(
-                          lotteryUSDCBalanceOnCompound,
-                          6
-                        )}{" "}
-                      USDC On Compound
                     </div>
                   </div>
                 </h1>

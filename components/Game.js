@@ -380,7 +380,11 @@ export default function Game() {
 
   return (
     <div className='container mx-auto'>
-      <HeadLine playerLTKBalance={playerLTKBalance} />
+      <HeadLine
+        playerLTKBalance={playerLTKBalance}
+        lotteryUSDCBalanceOnLottery={lotteryUSDCBalanceOnLottery}
+        lotteryUSDCBalanceOnCompound={lotteryUSDCBalanceOnCompound}
+      />
       <div className='flex flex-col justify-center lg:flex-row'>
         <EnterLottery
           lotteryAddress={lotteryAddress}
