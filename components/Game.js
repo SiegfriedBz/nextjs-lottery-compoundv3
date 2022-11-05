@@ -19,7 +19,7 @@ import {
 } from "../constants/lotteryToken/index.js"
 import { usdcAbi, usdcAddresses } from "../constants/usdc/index.js"
 
-const LOTTERY_STATE = ["Open to Play", "Calculating", "Open to Withdraw"]
+const LOTTERY_STATE = ["OPEN_TO_PLAY", "CALCULATING", "OPEN_TO_WITHDRAW"]
 
 export default function Game() {
   const ref = useRef()
@@ -37,12 +37,10 @@ export default function Game() {
 
   //* variables */
   const [provider, setProvider] = useState(undefined)
-  const [signer, setSigner] = useState(undefined)
   const [lotteryContract, setLotteryContract] = useState(undefined)
   const [lotteryTokenContract, setLotteryTokenContract] = useState(undefined)
   const [usdcContract, setUsdcContract] = useState(undefined)
   const [admin, setAdmin] = useState(undefined)
-  const [isAdmin, setIsAdmin] = useState(false)
   const [newWinner, setNewWinner] = useState(undefined)
   const [newWinPrize, setNewWinPrize] = useState(undefined)
   const [newWinDate, setNewWinDate] = useState(undefined)
@@ -87,14 +85,13 @@ export default function Game() {
         )
         const usdcContract = new ethers.Contract(usdcAddress, usdcAbi, signer)
         setProvider(provider)
-        setSigner(signer)
         setLotteryContract(lotteryContract)
         setLotteryTokenContract(lotteryTokenContract)
         setUsdcContract(usdcContract)
       }
       init()
     }
-  }, [isWeb3Enabled, account])
+  }, [isWeb3Enabled, account, lotteryAddress, lotteryTokenAddress, usdcAddress])
 
   // get Lottery constant variables
   useEffect(() => {
@@ -186,9 +183,11 @@ export default function Game() {
   })
 
   // helpers
+  const adminLowerCase = admin ? admin.toLowerCase() : null
+
   async function handleEnterLottery() {
     if (isWeb3Enabled) {
-      if (lotteryState != "Open to Play") {
+      if (lotteryState != "OPEN_TO_PLAY") {
         alert(
           `Next Lottery runs on ${new Date(
             parseInt(endWithDrawTime) * 1000
@@ -245,8 +244,8 @@ export default function Game() {
 
   async function handlePlayerWithdraw() {
     if (isWeb3Enabled) {
-      if (lotteryState != "Open to Withdraw") {
-        alert("Please wait until Lottery is open to Withdraw")
+      if (lotteryState != "OPEN_TO_WITHDRAW") {
+        alert("Please wait until Lottery is OPEN_TO_WITHDRAW")
       } else {
         const playerNumLTK = await lotteryTokenContract.balanceOf(account)
         if (parseInt(playerNumLTK) == 0) {
@@ -266,14 +265,18 @@ export default function Game() {
   }
 
   async function handleAdminFundLotteryAndApproveAndSupplyCompound() {
-    if (isWeb3Enabled && isAdmin && usdcContract && lotteryContract) {
+    if (
+      isWeb3Enabled &&
+      account == adminLowerCase &&
+      usdcContract &&
+      lotteryContract
+    ) {
       const amountUSDCToFund = ethers.utils.parseUnits("10", 6)
       // 1. Admin calls USDC .transfer() => USDC to Lottery
       let trx = await usdcContract.transfer(lotteryAddress, amountUSDCToFund, {
         gasLimit: 1000000,
       })
       await trx.wait(1)
-      console.log(`Admin funded Lottery with ${amountUSDCToFund} USDC`)
       // 2. Admin calls Lottery => Approve And Supply Compound
       trx = await lotteryContract.adminApproveAndSupplyCompound({
         gasLimit: 1000000,
@@ -285,13 +288,11 @@ export default function Game() {
   }
 
   async function handleAdminWithdrawETH() {
-    if (isWeb3Enabled && isAdmin && lotteryContract) {
-      console.log(`Admin withdrawing ETH...`)
+    if (isWeb3Enabled && account == adminLowerCase && lotteryContract) {
       let trx = await lotteryContract.adminWithdrawETH({
         gasLimit: 100000,
       })
       await trx.wait(1)
-      console.log("Admin withdrawing ETH...DONE")
       await upDateUI()
     }
   }
@@ -377,8 +378,6 @@ export default function Game() {
       )
   }
 
-  const adminLowerCase = admin ? admin.toLowerCase() : null
-
   return (
     <div className='container mx-auto'>
       <HeadLine playerLTKBalance={playerLTKBalance} />
@@ -412,7 +411,7 @@ export default function Game() {
         />
       </div>
       <div className='flex flex-col lg:flex-row justify-center'>
-        {lotteryState && lotteryState == "Open to Withdraw" && (
+        {lotteryState && lotteryState == "OPEN_TO_WITHDRAW" && (
           <UserWithDraw
             lotteryAddress={lotteryAddress}
             lotteryState={lotteryState}
