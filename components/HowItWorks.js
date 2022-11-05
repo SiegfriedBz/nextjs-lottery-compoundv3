@@ -27,15 +27,25 @@ export default function HowItWorks({
           </h1>
           <div className='flex'>
             {lotteryFee && ticketPrice ? (
-              <div className='flex flex-col m-auto p-2 justify-center align-middle'>
-                <h1 className='mb-2 mx-auto pb-2 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
-                  Lottery Fee:{" "}
-                  {lotteryFee && ethers.utils.formatEther(lotteryFee)} ETH
-                </h1>
-                <h1 className='mb-2 mx-auto pb-2 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
-                  Ticket Price:{" "}
-                  {ticketPrice && ethers.utils.formatUnits(ticketPrice, 6)} USDC
-                </h1>
+              <div className='flex align-middle mx-auto'>
+                <div className='flex flex-col m-auto mx-2 p-2 justify-center align-middle'>
+                  <h1 className='mb-2 mx-auto text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
+                    Lottery Fee
+                  </h1>
+                  <h1 className='mb-2 mx-auto text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
+                    {lotteryFee && ethers.utils.formatEther(lotteryFee)} ETH
+                  </h1>
+                </div>
+
+                <div className='flex flex-col m-auto mx-2 p-2 justify-center align-middle'>
+                  <h1 className='mb-2 mx-auto text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
+                    Ticket Price
+                  </h1>
+                  <h1 className='mb-2 mx-auto text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
+                    {ticketPrice && ethers.utils.formatUnits(ticketPrice, 6)}{" "}
+                    USDC
+                  </h1>
+                </div>
               </div>
             ) : (
               <h1 className='text-center text-lg font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>

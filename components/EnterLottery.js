@@ -4,7 +4,6 @@ import ProgressBar from "./ProgressBar"
 export default function EnterLottery({
   handleEnterLottery,
   lotteryAddress,
-  lotteryState,
   endPlayTime,
   isFirstPlayer,
   progress,
