@@ -23,7 +23,7 @@ export default function HowItWorks({
             3. Prizes are awarded every day
           </h1>
           <h1 className='mb-2 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
-            4. Even if you don't win, keep all of your money!
+            4. Even if you don&apos;t win, keep all of your money!
           </h1>
           <div className='flex'>
             {lotteryFee && ticketPrice ? (
