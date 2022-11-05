@@ -407,7 +407,7 @@ export default function Game() {
           handleGetStarted={handleGetStarted}
         />
       </div>
-      {winners && <Carousel winners={winners} />}
+      {/* {winners && <Carousel winners={winners} />} */}
       <div className='flex flex-col lg:flex-row justify-center'>
         <CurrentPlayers
           lotteryAddress={lotteryAddress}
