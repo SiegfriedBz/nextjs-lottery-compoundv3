@@ -17,7 +17,7 @@ export default function GetStarted({ lotteryTokenAddress, usdcAddress }) {
           </a>
         )}
 
-        <a href='https://goerlifaucet.com/' target='_blank' rel='noreferrer'>
+        <a href='https://faucets.chain.link/' target='_blank' rel='noreferrer'>
           <GetButton>Get Goerli ETH</GetButton>
         </a>
 
