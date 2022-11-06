@@ -35,8 +35,8 @@ export default function HeadLine({
             <h1 className='index-0 mx-auto text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
               {parseInt(ethers.utils.formatEther(playerLTKBalance))} LTK
             </h1>
-            <Icon color='green-300' position='bottom-0 left-10' />
-            <Icon color='green-300' position='bottom-0 right-10' />
+            <Icon position='bottom-0 left-10' />
+            <Icon position='bottom-0 right-10' />
           </div>
         </div>
       )}

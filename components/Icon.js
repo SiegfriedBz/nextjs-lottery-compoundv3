@@ -1,6 +1,6 @@
-export default function Icon({ color, position }) {
+export default function Icon({ position }) {
   return (
-    <div className={`absolute text-${color} ${position} font-bold text-3xl`}>
+    <div className={`absolute text-green-300 ${position} font-bold text-3xl`}>
       <svg
         xmlns='http://www.w3.org/2000/svg'
         fill='none'

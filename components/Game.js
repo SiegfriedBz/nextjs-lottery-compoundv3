@@ -297,6 +297,22 @@ export default function Game() {
       await upDateUI()
     }
   }
+  async function onAdminMint(_amount) {
+    if (
+      isWeb3Enabled &&
+      account == adminLowerCase &&
+      lotteryAddress &&
+      lotteryTokenContract
+    ) {
+      // mint(address to, uint256 amount)
+      const amount = ethers.utils.parseEther(_amount)
+      let trx = await lotteryTokenContract.mint(lotteryAddress, amount, {
+        gasLimit: 100000,
+      })
+      await trx.wait(1)
+      await upDateUI()
+    }
+  }
 
   // helper for Notifications
   async function setProgressBar(value) {
@@ -369,20 +385,7 @@ export default function Game() {
     }
   }
 
-  {
-    endPlayTime &&
-      console.log(
-        "endPlayTime",
-        new Date(parseInt(endPlayTime) * 1000).toLocaleString()
-      )
-  }
-  {
-    endWithDrawTime &&
-      console.log(
-        "endWithDrawTime",
-        new Date(parseInt(endWithDrawTime) * 1000).toLocaleString()
-      )
-  }
+  console.log("players", players)
 
   return (
     <div className='container'>
@@ -407,12 +410,15 @@ export default function Game() {
         />
       </div>
       <div className='flex flex-col lg:flex-row justify-center'>
-        <CurrentPlayers
-          lotteryAddress={lotteryAddress}
-          players={players}
-          progress={progress}
-          handleEnterLottery={handleEnterLottery}
-        />
+        {players && players.length > 0 && (
+          <CurrentPlayers
+            lotteryAddress={lotteryAddress}
+            players={players}
+            progress={progress}
+            handleEnterLottery={handleEnterLottery}
+          />
+        )}
+
         <Winners
           winners={winners}
           newWinner={newWinner}
@@ -444,6 +450,7 @@ export default function Game() {
               handleAdminFundLotteryAndApproveAndSupplyCompound
             }
             handleAdminWithdrawETH={handleAdminWithdrawETH}
+            onAdminMint={onAdminMint}
           />
         )}
       </div>
