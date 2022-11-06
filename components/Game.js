@@ -20,7 +20,12 @@ import {
 } from "../constants/lotteryToken/index.js"
 import { usdcAbi, usdcAddresses } from "../constants/usdc/index.js"
 
-const LOTTERY_STATE = ["OPEN_TO_PLAY", "CALCULATING", "OPEN_TO_WITHDRAW"]
+const LOTTERY_STATE = [
+  "OPEN_TO_PLAY",
+  "CALCULATING_WINNER_ADDRESS",
+  "CALCULATING_WINNER_GAINS",
+  "OPEN_TO_WITHDRAW",
+]
 
 export default function Game() {
   const ref = useRef()
@@ -42,29 +47,23 @@ export default function Game() {
   const [lotteryTokenContract, setLotteryTokenContract] = useState(undefined)
   const [usdcContract, setUsdcContract] = useState(undefined)
   const [admin, setAdmin] = useState(undefined)
-  const [newWinner, setNewWinner] = useState(undefined)
-  const [newWinPrize, setNewWinPrize] = useState(undefined)
-  const [newWinDate, setNewWinDate] = useState(undefined)
   const [lotteryFee, setLotteryFee] = useState(undefined)
   const [ticketPrice, setTicketPrice] = useState(undefined)
   const [lotteryState, setLotteryState] = useState(undefined)
   const [endPlayTime, setEndPlayTime] = useState(false)
   const [endWithDrawTime, setEndWithDrawTime] = useState(false)
-  const [playTimeInterval, setPlayTimeInterval] = useState(false)
   const [isFirstPlayer, setIsFirstPlayer] = useState(undefined)
   const [players, setPlayers] = useState(undefined)
   const [winners, setWinners] = useState(undefined)
+  const [newWinner, setNewWinner] = useState(undefined)
+  const [newWinPrize, setNewWinPrize] = useState(undefined)
+  const [newWinDate, setNewWinDate] = useState(undefined)
   const [lotteryETHBalance, setLotteryETHBalance] = useState(undefined)
   const [lotteryUSDCBalanceOnLottery, setLotteryUSDCBalanceOnLottery] =
     useState(undefined)
   const [lotteryUSDCBalanceOnCompound, setLotteryUSDCBalanceOnCompound] =
     useState(undefined)
-  const [lotteryLTKBalance, setLotteryLTKBalance] = useState(undefined)
   const [playerLTKBalance, setPlayerLTKBalance] = useState(undefined)
-  const [
-    playerLTKGivenAllowanceToLottery,
-    setPlayerLTKGivenAllowanceToLottery,
-  ] = useState(undefined)
   const [progress, setProgress] = useState(undefined)
 
   //* functions */
@@ -132,20 +131,18 @@ export default function Game() {
       const admin = await lotteryContract.getAdmin()
       const lotteryFee = await lotteryContract.getLotteryFee()
       const ticketPrice = await lotteryContract.getLotteryTicketPrice()
-      const playTimeInterval = await lotteryContract.getInterval()
       setAdmin(admin)
       setLotteryFee(lotteryFee)
       setTicketPrice(ticketPrice)
-      setPlayTimeInterval(playTimeInterval)
     }
   }
 
   async function upDateUI() {
     if (lotteryContract && lotteryTokenContract && provider) {
       const lotteryState = await lotteryContract.getLotteryState()
-      const isFirstPlayer = await lotteryContract.getIsFirstPlayer()
       const endPlayTime = await lotteryContract.getEndPlayTime()
       const endWithDrawTime = await lotteryContract.getEndWithDrawTime()
+      const isFirstPlayer = await lotteryContract.getIsFirstPlayer()
       const players = await lotteryContract.getPlayers()
       const winners = await lotteryContract.getWinners()
       const lotteryETHBalance = await provider.getBalance(lotteryAddress)
@@ -153,24 +150,17 @@ export default function Game() {
         await lotteryContract.getLotteryUSDCBalance()
       const lotteryUSDCBalanceOnCompound =
         await lotteryContract.getLotteryUSDCBalanceOnCompound()
-      const lotteryLTKBalance = await lotteryTokenContract.balanceOf(
-        lotteryAddress
-      )
       const playerLTKBalance = await lotteryTokenContract.balanceOf(account)
-      let playerLTKGivenAllowanceToLottery =
-        await lotteryTokenContract.allowance(account, lotteryAddress)
       setLotteryState(LOTTERY_STATE[parseInt(lotteryState)])
-      setIsFirstPlayer(isFirstPlayer)
       setEndPlayTime(endPlayTime)
       setEndWithDrawTime(endWithDrawTime)
+      setIsFirstPlayer(isFirstPlayer)
       setPlayers(players)
       setWinners(winners)
       setLotteryETHBalance(lotteryETHBalance)
       setLotteryUSDCBalanceOnLottery(lotteryUSDCBalanceOnLottery)
       setLotteryUSDCBalanceOnCompound(lotteryUSDCBalanceOnCompound)
-      setLotteryLTKBalance(lotteryLTKBalance)
       setPlayerLTKBalance(playerLTKBalance)
-      setPlayerLTKGivenAllowanceToLottery(playerLTKGivenAllowanceToLottery)
     }
   }
 
@@ -188,24 +178,30 @@ export default function Game() {
     if (isWeb3Enabled) {
       if (lotteryState != "OPEN_TO_PLAY") {
         alert(
-          `Next Lottery runs on ${new Date(
+          `Next Lottery run on ${new Date(
             parseInt(endWithDrawTime) * 1000
           ).toLocaleString()}`
         )
-      } else {
-        // 1. user calls USDC .transfer() => USDC to lottery contract
+      } else if (
+        lotteryContract &&
+        lotteryTokenContract &&
+        usdcContract &&
+        lotteryAddress &&
+        lotteryFee &&
+        ticketPrice
+      ) {
+        // 1. User calls USDC contract => USDC to Lottery
         try {
           await setProgressBar(25)
           let trx = await usdcContract.transfer(lotteryAddress, ticketPrice, {
             gasLimit: 1000000,
           })
           await trx.wait(1)
-          console.log("trx", trx)
         } catch (error) {
           setProgressBar(undefined)
           console.log("error", error)
         }
-        // 2. user calls Lottery .enterLottery()
+        // 2. User calls Lottery contract => lotteryFee to Lottery
         try {
           await setProgressBar(50)
           await enterLottery({
@@ -219,7 +215,7 @@ export default function Game() {
           console.log("error", error)
         }
 
-        // 3. user calls LTK .increaseAllowance() => Gives LTKAllowance To Lottery
+        // 3. User calls LTK contract => increase LTK Allowance To Lottery
         try {
           await setProgressBar(75)
           let trx = await lotteryTokenContract.increaseAllowance(
@@ -244,19 +240,17 @@ export default function Game() {
   async function handlePlayerWithdraw() {
     if (isWeb3Enabled) {
       if (lotteryState != "OPEN_TO_WITHDRAW") {
-        alert("Please wait until Lottery is OPEN_TO_WITHDRAW")
+        alert("Please wait until Lottery is Open to Withdraw")
       } else {
         const playerNumLTK = await lotteryTokenContract.balanceOf(account)
         if (parseInt(playerNumLTK) == 0) {
-          alert("Player without LTK can not withdraw USDC")
+          alert("You have no USDC to withdraws")
         } else {
-          console.log(`Player ${account} is withdrawing...`)
-          // Player calls Lottery .withdrawFromLottery()
+          // Player calls Lottery contract => withdraw USDC
           let trx = await lotteryContract.withdrawFromLottery({
             gasLimit: 1000000,
           })
           await trx.wait(1)
-          console.log("Player has withdrawn")
           await upDateUI()
         }
       }
@@ -269,17 +263,16 @@ export default function Game() {
       alert("Access reserved to admin")
     } else if (isWeb3Enabled && usdcContract && lotteryContract) {
       const amountUSDCToFund = ethers.utils.parseUnits("10", 6)
-      // 1. Admin calls USDC .transfer() => USDC to Lottery
+      // 1. Admin calls USDC contract => USDC to Lottery
       let trx = await usdcContract.transfer(lotteryAddress, amountUSDCToFund, {
         gasLimit: 1000000,
       })
       await trx.wait(1)
-      // 2. Admin calls Lottery => Approve And Supply Compound
+      // 2. Admin calls Lottery contract => Approve And Supply Compound with all USDC available in Lottery
       trx = await lotteryContract.adminApproveAndSupplyCompound({
         gasLimit: 1000000,
       })
       await trx.wait(1)
-      // Admin calls lottery contract .approveCompound() => USDC to Compound
       await upDateUI()
     }
   }
@@ -288,6 +281,7 @@ export default function Game() {
     if (account && adminLowerCase && account != adminLowerCase) {
       alert("Access reserved to admin")
     } else if (isWeb3Enabled && account == adminLowerCase && lotteryContract) {
+      // Admin calls Lottery contract => withdraw ETH
       let trx = await lotteryContract.adminWithdrawETH({
         gasLimit: 100000,
       })
@@ -305,7 +299,7 @@ export default function Game() {
       lotteryAddress &&
       lotteryTokenContract
     ) {
-      // mint(address to, uint256 amount)
+      // Admin calls LTK contract => Mint LTK
       const amount = ethers.utils.parseEther(_amount)
       let trx = await lotteryTokenContract.mint(lotteryAddress, amount, {
         gasLimit: 100000,
@@ -361,6 +355,14 @@ export default function Game() {
       })
 
       lotteryWithWebSocket.on(
+        "SwitchToCalculatingWinnerGains",
+        async (event) => {
+          await upDateUI()
+          // TODO : add notificationss
+        }
+      )
+
+      lotteryWithWebSocket.on(
         "WinnerPicked",
         async (s_newWinner, s_newPrize, winDate, event) => {
           await upDateUI()
@@ -379,15 +381,18 @@ export default function Game() {
           // console.log(JSON.stringify(info, null, 2))
         }
       )
-      lotteryWithWebSocket.on("CompoundWithdrawDone", async (event) => {
+
+      lotteryWithWebSocket.on("SwitchToOpenToPlay ", async (event) => {
         await upDateUI()
         // TODO : add notificationss
       })
     }
   }
 
+  console.log("lotteryState", lotteryState)
+
   return (
-    <div className='container'>
+    <div className='container mx-auto'>
       <HeadLine
         playerLTKBalance={playerLTKBalance}
         lotteryUSDCBalanceOnLottery={lotteryUSDCBalanceOnLottery}
@@ -417,13 +422,14 @@ export default function Game() {
             handleEnterLottery={handleEnterLottery}
           />
         )}
-
-        <Winners
-          winners={winners}
-          newWinner={newWinner}
-          newWinPrize={newWinPrize}
-          newWinDate={newWinDate}
-        />
+        {winners && winners.length > 0 && (
+          <Winners
+            winners={winners}
+            newWinner={newWinner}
+            newWinPrize={newWinPrize}
+            newWinDate={newWinDate}
+          />
+        )}
       </div>
       <div className='flex flex-col lg:flex-row justify-center'>
         {lotteryState && lotteryState == "OPEN_TO_WITHDRAW" && (
