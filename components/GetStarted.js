@@ -8,15 +8,13 @@ export default function GetStarted({ lotteryTokenAddress, usdcAddress }) {
           Get Started
         </h1>
         <div className='flex flex-col align-middle justify-center lg:flex-row'>
-          {lotteryTokenAddress && (
-            <a
-              href='https://metamask.io/download/'
-              target='_blank'
-              rel='noreferrer'
-            >
-              <GetButton>Add MetaMask</GetButton>
-            </a>
-          )}
+          <a
+            href='https://metamask.io/download/'
+            target='_blank'
+            rel='noreferrer'
+          >
+            <GetButton>Add MetaMask</GetButton>
+          </a>
           <a
             href='https://faucets.chain.link/'
             target='_blank'
