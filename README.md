@@ -8,7 +8,7 @@ Use react-moralis, tailwindcss, web3uikit
 ## Play
 https://win2together.vercel.app/
 
-![image](https://user-images.githubusercontent.com/99029880/200133237-55e47288-47b7-48dd-9fe3-994d1b02dea2.png)
+![image](https://user-images.githubusercontent.com/99029880/200170666-01cd38c7-c63b-4875-94b0-4fc04b6c70ea.png)
 
 
 ## Getting Started
