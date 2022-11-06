@@ -29,10 +29,10 @@ export default function HeadLine({
       {playerLTKBalance > 0 && (
         <div className='flex justify-center align-middle my-3'>
           <div className='flex flex-col mx-auto relative'>
-            <h1 className='mx-auto text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
+            <h1 className='mx-auto text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
               {playerLTKBalance == 1 ? "My Lottery Token" : "My Lottery Tokens"}
             </h1>
-            <h1 className='index-0 mx-auto text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
+            <h1 className='index-0 mx-auto text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
               {parseInt(ethers.utils.formatEther(playerLTKBalance))} LTK
             </h1>
             <Icon position='bottom-0 left-10' />
