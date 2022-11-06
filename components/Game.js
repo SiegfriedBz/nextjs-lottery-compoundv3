@@ -336,58 +336,63 @@ export default function Game() {
   }
 
   //* Events */
-  if (isWeb3Enabled && lotteryAddress && lotteryAbi) {
-    const webSocket =
-      chainId == 5 ? process.env.NEXT_PUBLIC_GOERLI_WEB_SOCKET : null
-    if (webSocket) {
-      const webSocketProvider = new ethers.providers.WebSocketProvider(
-        webSocket
-      )
-      const lotteryWithWebSocket = new ethers.Contract(
-        lotteryAddress,
-        lotteryAbi,
-        webSocketProvider
-      )
+  async function listenToEvents() {
+    if (isWeb3Enabled && lotteryAddress && lotteryAbi) {
+      const webSocket =
+        chainId == 5 ? process.env.NEXT_PUBLIC_GOERLI_WEB_SOCKET : null
+      if (webSocket) {
+        const webSocketProvider = new ethers.providers.WebSocketProvider(
+          webSocket
+        )
+        const lotteryWithWebSocket = new ethers.Contract(
+          lotteryAddress,
+          lotteryAbi,
+          webSocketProvider
+        )
 
-      lotteryWithWebSocket.on("LotteryEntered", async (event) => {
-        await upDateUI()
-        // TODO : add notificationss
-      })
+        lotteryWithWebSocket
+          .on("LotteryEntered", async (event) => {
+            await upDateUI()
+            // TODO : add notificationss
+          })
+          .on("SwitchToCalculatingWinnerGains", async (event) => {
+            await upDateUI()
+            // TODO : add notificationss
+          })
+          .on(
+            "WinnerPicked",
+            async (s_newWinner, s_newPrize, winDate, event) => {
+              await upDateUI()
+              let info = {
+                newWinner: s_newWinner,
+                newWinPrize: s_newPrize,
+                newWinDate: winDate,
+                data: event,
+              }
+              const { newWinner, newWinPrize, newWinDate } = info
+              setNewWinner(newWinner)
+              setNewWinPrize(ethers.utils.formatUnits(newWinPrize, 6))
+              setNewWinDate(
+                new Date(parseInt(newWinDate) * 1000).toLocaleString()
+              )
 
-      lotteryWithWebSocket.on(
-        "SwitchToCalculatingWinnerGains",
-        async (event) => {
-          await upDateUI()
-          // TODO : add notificationss
-        }
-      )
-
-      lotteryWithWebSocket.on(
-        "WinnerPicked",
-        async (s_newWinner, s_newPrize, winDate, event) => {
-          await upDateUI()
-          let info = {
-            newWinner: s_newWinner,
-            newWinPrize: s_newPrize,
-            newWinDate: winDate,
-            data: event,
-          }
-          const { newWinner, newWinPrize, newWinDate } = info
-          setNewWinner(newWinner)
-          setNewWinPrize(ethers.utils.formatUnits(newWinPrize, 6))
-          setNewWinDate(new Date(parseInt(newWinDate) * 1000).toLocaleString())
-
-          // TODO : add notificationss
-          // console.log(JSON.stringify(info, null, 2))
-        }
-      )
-
-      lotteryWithWebSocket.on("SwitchToOpenToPlay ", async (event) => {
-        await upDateUI()
-        // TODO : add notificationss
-      })
+              // TODO : add notificationss
+              // console.log(JSON.stringify(info, null, 2))
+            }
+          )
+          .on("UserWithdraw", async (event) => {
+            await upDateUI()
+            // TODO : add notificationss
+          })
+          .on("SwitchToOpenToPlay ", async (event) => {
+            await upDateUI()
+            // TODO : add notificationss
+          })
+      }
     }
   }
+
+  listenToEvents()
 
   console.log("lotteryState", lotteryState)
 
