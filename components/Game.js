@@ -184,8 +184,6 @@ export default function Game() {
   })
 
   // helpers
-  const adminLowerCase = admin ? admin.toLowerCase() : null
-
   async function handleEnterLottery() {
     if (isWeb3Enabled) {
       if (lotteryState != "OPEN_TO_PLAY") {
@@ -265,13 +263,11 @@ export default function Game() {
     }
   }
 
+  const adminLowerCase = admin ? admin.toLowerCase() : null
   async function handleAdminFundLotteryAndApproveAndSupplyCompound() {
-    if (
-      isWeb3Enabled &&
-      account == adminLowerCase &&
-      usdcContract &&
-      lotteryContract
-    ) {
+    if (account && adminLowerCase && account != adminLowerCase) {
+      alert("Access reserved to admin")
+    } else if (isWeb3Enabled && usdcContract && lotteryContract) {
       const amountUSDCToFund = ethers.utils.parseUnits("10", 6)
       // 1. Admin calls USDC .transfer() => USDC to Lottery
       let trx = await usdcContract.transfer(lotteryAddress, amountUSDCToFund, {
@@ -289,7 +285,9 @@ export default function Game() {
   }
 
   async function handleAdminWithdrawETH() {
-    if (isWeb3Enabled && account == adminLowerCase && lotteryContract) {
+    if (account && adminLowerCase && account != adminLowerCase) {
+      alert("Access reserved to admin")
+    } else if (isWeb3Enabled && account == adminLowerCase && lotteryContract) {
       let trx = await lotteryContract.adminWithdrawETH({
         gasLimit: 100000,
       })
@@ -297,8 +295,11 @@ export default function Game() {
       await upDateUI()
     }
   }
+
   async function onAdminMint(_amount) {
-    if (
+    if (account && adminLowerCase && account != adminLowerCase) {
+      alert("Access reserved to admin")
+    } else if (
       isWeb3Enabled &&
       account == adminLowerCase &&
       lotteryAddress &&
@@ -385,8 +386,6 @@ export default function Game() {
     }
   }
 
-  console.log("players", players)
-
   return (
     <div className='container'>
       <HeadLine
@@ -437,7 +436,7 @@ export default function Game() {
         )}
       </div>
       <div className='flex flex-col lg:flex-row justify-center'>
-        {account && adminLowerCase && account == adminLowerCase && (
+        {account && admin && (
           <Admin
             admin={admin}
             lotteryAddress={lotteryAddress}
