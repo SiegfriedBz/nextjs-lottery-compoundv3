@@ -11,6 +11,17 @@ export default function HeadLine({
       ? lotteryUSDCBalanceOnLottery
       : lotteryUSDCBalanceOnCompound
 
+  if (lotteryUSDCBalanceOnLottery && lotteryUSDCBalanceOnCompound) {
+    console.log(
+      "lotteryUSDCBalanceOnLottery",
+      ethers.utils.formatUnits(lotteryUSDCBalanceOnLottery, 6)
+    )
+    console.log(
+      "lotteryUSDCBalanceOnCompound",
+      ethers.utils.formatUnits(lotteryUSDCBalanceOnCompound, 6)
+    )
+  }
+
   return (
     <div className='flex flex-col justify-center align-middle'>
       <h1 className='flex mx-auto justify-center text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300 p-5'>
@@ -33,7 +44,7 @@ export default function HeadLine({
               {playerLTKBalance == 1 ? "My Lottery Token" : "My Lottery Tokens"}
             </h1>
             <h1 className='index-0 mx-auto text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-300'>
-              {parseInt(ethers.utils.formatEther(playerLTKBalance))} LTK
+              {playerLTKBalance && playerLTKBalance.toString()} LTK
             </h1>
             <Icon position='bottom-0 left-10' />
             <Icon position='bottom-0 right-10' />
