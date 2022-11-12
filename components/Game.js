@@ -180,7 +180,7 @@ export default function Game() {
 
   // helpers
   async function handleEnterLottery() {
-    if (isWeb3Enabled) {
+    if (isWeb3Enabled && playerUSDCBalance) {
       if (playerUSDCBalance.toNumber() < ticketPrice.toNumber()) {
         alert("You need more USDC to enter the lottery")
         return
@@ -248,7 +248,7 @@ export default function Game() {
   }
 
   async function handlePlayerWithdraw() {
-    if (isWeb3Enabled) {
+    if (isWeb3Enabled && lotteryTokenContract) {
       if (lotteryState != "OPEN_TO_WITHDRAW") {
         alert("Please wait until Lottery is Open to Withdraw")
       } else {
