@@ -127,21 +127,6 @@ export default function Game() {
     provider,
   ])
 
-  const isReady = () => {
-    return (
-      isWeb3Enabled &&
-      typeof account !== "undefined" &&
-      typeof lotteryContract !== "undefined" &&
-      typeof lotteryTokenContract !== "undefined" &&
-      typeof usdcContract !== "undefined" &&
-      typeof provider !== "undefined"
-    )
-  }
-  console.log("isReady", isReady())
-  if (playerLTKBalance) {
-    console.log("playerLTKBalance", playerLTKBalance.toString())
-  }
-
   async function getLotteryConstants() {
     if (lotteryContract) {
       const admin = await lotteryContract.getAdmin()
@@ -181,23 +166,7 @@ export default function Game() {
       setLotteryUSDCBalanceOnCompound(lotteryUSDCBalanceOnCompound)
       setPlayerLTKBalance(playerLTKBalance)
       setPlayerUSDCBalance(playerUSDCBalance)
-
-      let lotteryBaseUSDCValue = await lotteryContract.getLotteryBaseUsdcValue()
-      console.log(
-        "lotteryBaseUSDCValue",
-        ethers.utils.formatUnits(lotteryBaseUSDCValue, 6)
-      )
-
-      let s_totalNumTickets = await lotteryContract.getTotalNumTickets()
-      console.log("s_totalNumTickets", s_totalNumTickets.toString())
     }
-  }
-
-  if (playerUSDCBalance && ticketPrice) {
-    console.log(
-      "playerUSDCBalance toNumber >= ticketPrice toNumber",
-      playerUSDCBalance.toNumber() >= ticketPrice.toNumber()
-    )
   }
 
   // Lottery contract function using Moralis
@@ -211,7 +180,6 @@ export default function Game() {
 
   // helpers
   async function handleEnterLottery() {
-    // CHECK playerUSDCBalance.toNumber() >= ticketPrice.toNumber()
     if (isWeb3Enabled) {
       if (playerUSDCBalance.toNumber() < ticketPrice.toNumber()) {
         alert("You need more USDC to enter the lottery")
@@ -219,7 +187,7 @@ export default function Game() {
       }
       if (lotteryState != "OPEN_TO_PLAY") {
         alert(
-          `Next Lottery run on ${new Date(
+          `Please wait for next Lottery run: ${new Date(
             parseInt(endWithDrawTime) * 1000
           ).toLocaleString()}`
         )
@@ -286,7 +254,7 @@ export default function Game() {
       } else {
         const playerNumLTK = await lotteryTokenContract.balanceOf(account)
         if (parseInt(playerNumLTK) == 0) {
-          alert("You have no USDC to withdraws")
+          alert("You have no USDC to withdraw")
         } else {
           // Player calls Lottery contract => withdraw USDC
           let trx = await lotteryContract.withdrawFromLottery({
@@ -357,9 +325,9 @@ export default function Game() {
   }
 
   async function handleSucess(tx) {
-    await tx.wait(2)
+    await tx.wait(1)
     handleNewNotification("Tx Notification", "Transaction complete")
-    upDateUI()
+    await upDateUI()
   }
 
   async function handleNewNotification(title, message) {
@@ -378,7 +346,6 @@ export default function Game() {
   }
 
   //* Events */
-
   if (isWeb3Enabled && lotteryAddress && lotteryAbi) {
     const webSocket =
       chainId == 5 ? process.env.NEXT_PUBLIC_GOERLI_WEB_SOCKET : null
@@ -392,14 +359,13 @@ export default function Game() {
         webSocketProvider
       )
 
+      // TODO: add notifications
       lotteryWithWebSocket
         .on("LotteryEntered", async (event) => {
           await upDateUI()
-          // TODO : add notificationss
         })
         .on("SwitchToCalculatingWinnerGains", async (event) => {
           await upDateUI()
-          // TODO : add notificationss
         })
         .on("WinnerPicked", async (s_newWinner, s_newPrize, winDate, event) => {
           await upDateUI()
@@ -413,24 +379,17 @@ export default function Game() {
           setNewWinner(newWinner)
           setNewWinPrize(ethers.utils.formatUnits(newWinPrize, 6))
           setNewWinDate(new Date(parseInt(newWinDate) * 1000).toLocaleString())
-
-          // TODO : add notificationss
-          // console.log(JSON.stringify(info, null, 2))
         })
         .on("UserWithdraw", async (event) => {
           await upDateUI()
-          // TODO : add notificationss
         })
         .on("SwitchToOpenToPlay ", async (event) => {
           await upDateUI()
-          // TODO : add notificationss
         })
     }
   }
 
   console.log("lotteryState", lotteryState)
-
-  if (!isReady) return <h1>Loading...</h1>
 
   return (
     <div className='container mx-auto'>

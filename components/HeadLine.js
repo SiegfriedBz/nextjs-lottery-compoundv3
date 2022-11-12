@@ -1,4 +1,5 @@
 import { ethers } from "ethers"
+import { useEffect } from "react"
 import Icon from "./Icon"
 
 export default function HeadLine({
@@ -10,17 +11,6 @@ export default function HeadLine({
     lotteryUSDCBalanceOnLottery > lotteryUSDCBalanceOnCompound
       ? lotteryUSDCBalanceOnLottery
       : lotteryUSDCBalanceOnCompound
-
-  if (lotteryUSDCBalanceOnLottery && lotteryUSDCBalanceOnCompound) {
-    console.log(
-      "lotteryUSDCBalanceOnLottery",
-      ethers.utils.formatUnits(lotteryUSDCBalanceOnLottery, 6)
-    )
-    console.log(
-      "lotteryUSDCBalanceOnCompound",
-      ethers.utils.formatUnits(lotteryUSDCBalanceOnCompound, 6)
-    )
-  }
 
   return (
     <div className='flex flex-col justify-center align-middle'>
