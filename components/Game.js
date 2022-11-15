@@ -326,7 +326,7 @@ export default function Game() {
 
   async function handleSucess(tx) {
     await tx.wait(1)
-    handleNewNotification("Tx Notification", "Transaction complete")
+    // handleNewNotification("Tx Notification", "Transaction complete")
     await upDateUI()
   }
 
