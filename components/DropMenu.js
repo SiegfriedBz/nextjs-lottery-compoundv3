@@ -1,5 +1,6 @@
 import { Fragment } from "react"
 import { Menu, Transition } from "@headlessui/react"
+import Link from "next/link"
 
 export default function DropMenu() {
   const activeClass =
@@ -30,32 +31,32 @@ export default function DropMenu() {
           <div className=''>
             <Menu.Item>
               {({ active }) => (
-                <a
+                <Link
                   href='/getStarted'
                   className={active ? activeClass : defaultClass}
                 >
                   Get Started
-                </a>
+                </Link>
               )}
             </Menu.Item>
             <Menu.Item>
               {({ active }) => (
-                <a
+                <Link
                   href='/etherscanLinks'
                   className={active ? activeClass : defaultClass}
                 >
                   Etherscan
-                </a>
+                </Link>
               )}
             </Menu.Item>
             <Menu.Item>
               {({ active }) => (
-                <a
+                <Link
                   href='/admin'
                   className={active ? activeClass : defaultClass}
                 >
                   Admin
-                </a>
+                </Link>
               )}
             </Menu.Item>
           </div>
