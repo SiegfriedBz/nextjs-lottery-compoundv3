@@ -1,4 +1,3 @@
-import styles from "../styles/Home.module.css"
 import { useState, useEffect, useRef } from "react"
 import { ethers } from "ethers"
 
@@ -9,7 +8,7 @@ import CurrentPlayers from "./CurrentPlayers"
 import Winners from "./Winners"
 import UserWithDraw from "./UserWithDraw"
 import Admin from "./Admin"
-import GetStarted from "./GetStarted"
+// import GetStarted from "./GetStarted"
 import EtherScanLinks from "./EtherScanLinks"
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useNotification } from "web3uikit"
@@ -459,16 +458,6 @@ export default function Game() {
           />
         )}
       </div>
-
-      <div className='flex flex-col lg:flex-row justify-center'>
-        <div ref={ref}>
-          <GetStarted
-            lotteryTokenAddress={lotteryTokenAddress}
-            usdcAddress={usdcAddress}
-          />
-        </div>
-      </div>
-
       <div className='flex flex-col lg:flex-row justify-center'>
         <div ref={ref}>
           <EtherScanLinks
